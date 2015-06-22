@@ -1,7 +1,7 @@
 {
   "name": "bzick/smart-invoker",
   "description": "Utility classes for invoking callables with verification of arguments and type casting",
-  "keywords": ["invoke", "call", "validation", "cast", "call_user_func", "call_user_func_array"],
+  "keywords": ["invoke", "call", "validation", "cast", "call_user_func", "call_user_func_array", "reflection"],
   "license": "MIT",
   "authors": [
 	{
@@ -13,12 +13,17 @@
 	"php": ">=5.4"
   },
   "require-dev": {
-	"phpunit/phpunit": "*"
+	"phpunit/phpunit": "*",
+	"satooshi/php-coveralls": "dev-master"
+
   },
   "autoload": {
 	"psr-0": {
 	  "SmartInvoker": "src/"
 	}
+  },
+  "autoload-dev": {
+	"classmap": ["tests/"]
   }
 }
 

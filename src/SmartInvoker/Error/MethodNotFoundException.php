@@ -1,6 +1,6 @@
 <?php
 
-namespace SmartInvoker;
+namespace SmartInvoker\Error;
 
 
-class MethodNotFoundException extends \Exception {}
+class MethodNotFoundException extends \BadMethodCallException {}

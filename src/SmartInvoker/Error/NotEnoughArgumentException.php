@@ -1,6 +1,6 @@
 <?php
 
-namespace SmartInvoker;
+namespace SmartInvoker\Error;
 
 
-class NotEnoughArgumentException extends \InvalidArgumentException {}
+class NotEnoughArgumentException extends InvalidArgumentException {}

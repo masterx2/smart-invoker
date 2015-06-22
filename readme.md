@@ -1,23 +1,67 @@
 SmartInvoker
 =============
 
-```php
-
-SmartInvoker::call('Controller::action', $_GET);
+Smart Invoker allows to call functions, methods and objects with validation of arguments and type casting. 
+This is similar to [call_user_func](http://php.net/call_user_func) and [call_user_func_array](http://php.net/call_user_func_array), but more smarter.
+For example calculate hypotenuse using method:
 
 ```
+class Math {
+	/**
+	 * @param float $leg1 (unsigned) first cathetus of triangle
+	 * @param float $leg2 (unsigned) second cathetus of triangle
+	 * @return float
+	 */
+    public static function hypotenuse($leg1, $leg2, $round = 2) {
+        // ...
+    }
+}
+```
+all arguments we gets from associative (or plain) array (e.g. `$_GET`).
 
-SmartInvoker всю информацию приложение берет из doc-блока методов и рефлексии:
+If use classic way with `call_user_func`:
+
+```php
+if(isset($_GET['leg1'])) {
+    $leg1 = floatval($_GET['leg1']);
+    if($leg1 < 0) {
+        throw new LogicException("leg1 should be greater than 0");
+    }
+} else {
+    throw new RuntimeException("No leg1 parameter");
+}
+if(isset($_GET['leg2'])) {
+    $leg2 = floatval($_GET['leg2']);
+    if($leg2 < 0) {
+        throw new LogicException("leg2 should be greater than 0");
+    }
+} else {
+    throw new RuntimeException("No leg2 parameter");
+}
+
+return call_user_func('Math::hypotenuse', $leg1, $leg2);
+```
+
+But if use `SmartInvoker` we get one line of code: 
+
+```php
+return SmartInvoker::call('hypotenuse', $_GET);
+```
+
+SmartInvoker find all arguments from associative (or plain) array `$_GET`, change type, validate and invoke method.
+
+## Method call
+
 
 ```php
 /**
- * Описание метода
- * @param int $arg1 некий числовой аргумент
- * @param string $arg2 некий стоковый аргумент
- * @param float[] $arg3 массив чисел с плавующей точкой, опционален
- * @return bool результат метода
+ * Method description
+ * @param int $arg1 some integer value
+ * @param string $arg2 some string value
+ * @param float[] $arg3 array of floating point values
+ * @return bool method result
  **/
-public function doSomethingAction($arg1, $arg2, array $arg3 = array()) {
+public function doSomething($arg1, $arg2, array $arg3 = array()) {
     // ...
 }
 ```
@@ -38,7 +82,7 @@ public function doSomethingAction($arg1, $arg2, array $arg3) {
 }
 ```
 
-Доступные проверки (класс `SmartInvoker\Verify`):
+List of verifications (class `SmartInvoker\Verify`):
 
 * `unsigned` - число должно быть положительным, включая ноль
 * `positive` - число должно быть строго больше нуля
@@ -92,3 +136,10 @@ public function doSomethingAction(splFileInfo $file) {
     // ...
 }
 ```
+
+## Create object
+
+## Cache
+
+## RPC example
+

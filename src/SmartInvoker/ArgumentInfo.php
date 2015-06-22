@@ -3,13 +3,16 @@
 namespace SmartInvoker;
 
 
-class ParameterInfo {
+use SmartInvoker\Error\TypeCastingException;
+use SmartInvoker\Error\ValidationException;
 
-    private static $_aliases = [
+class ArgumentInfo {
+
+    private static $_aliases = array(
         "integer" => "int",
         "str" => "string",
         "double" => "float"
-    ];
+    );
 
     /**
      * @var array of native types with priorities
@@ -25,17 +28,63 @@ class ParameterInfo {
         "callable" => 10
     );
 
+	/**
+	 * Original method name
+	 * @var string
+	 */
     public $method;
+	/**
+	 * Parameter name
+	 * @var string
+	 */
     public $name;
+	/**
+	 * Parameter description
+	 * @var
+	 */
     public $desc;
+	/**
+	 * Verification list
+	 * @var array[]
+	 */
     public $verify;
-    public $multiple;
+	/**
+	 * Expected multiple values
+	 * @var bool
+	 */
+    public $multiple = false;
+	/**
+	 * Type of expected value (native PHP type)
+	 * @var string
+	 */
     public $type;
+	/**
+	 * Class name, if parameter expects object
+	 * @var string
+	 */
     public $class;
-    public $optional;
+	/**
+	 * Is this optional parameter?
+	 * @var bool
+	 */
+    public $optional = false;
+	/**
+	 * Default value
+	 * @var
+	 */
     public $default;
+	/**
+	 * Position in argument list of method (starts with 0)
+	 * @var int
+	 */
     public $position;
 
+	/**
+	 * Import information from reflection
+	 * @param \ReflectionParameter $param
+	 * @param array $doc_params
+	 * @return static
+	 */
     public static function import(\ReflectionParameter $param, array $doc_params = []) {
         $arg           = new static;
         $arg->method   = $param->getDeclaringFunction()->name;
@@ -84,30 +133,32 @@ class ParameterInfo {
         return $arg;
     }
 
-    /**
-     * Convert value to required type
-     * @param mixed $value
-     * @param object $verify
-     * @return mixed
-     */
+	/**
+	 * Convert value to required type (with validation if verify present)
+	 * @param mixed $value
+	 * @param object $verify
+	 * @return mixed
+	 * @throws TypeCastingException
+	 * @throws ValidationException
+	 */
     public function filter($value, $verify = null) {
         $type = gettype($value);
 
         if($this->multiple && !is_array($value)) {
-            throw new \InvalidArgumentException("parameter '{$this->name}' must be array");
+            throw new TypeCastingException($this, gettype($value));
         }
         if($this->type) {
             if($this->type === $type) { // type may be an array
-                if($type == "object" || $this->type == "file") {
+                if($type == "object") {
                     if($this->multiple) {
                         array_walk_recursive($param, function (&$value) {
                             if(!is_a($value, $this->class)) {
-                                throw new \InvalidArgumentException("parameter '{$this->name}' must be instance of ".$this->class);
+	                            throw new TypeCastingException($this, gettype($value));
                             }
                         });
                     } else {
                         if(!is_a($value, $this->class)) {
-                            throw new \InvalidArgumentException("parameter '{$this->name}' must be instance of ".$this->class);
+	                        throw new TypeCastingException($this, gettype($value));
                         }
                     }
                 }
@@ -125,31 +176,41 @@ class ParameterInfo {
             foreach($this->verify as $method => $v) {
                 if($this->multiple) {
                     foreach($value as $k => &$item) {
-                        if(call_user_func([$verify, $method], $item, $v['args']) === false) {
-                            throw new \InvalidArgumentException("parameter '{$this->name}' have invalid value in '$k' element. Require ".$v['original']);
-                        }
+	                    try {
+		                    if (call_user_func([$verify, $method], $item, $v['args']) === false) {
+			                    throw new ValidationException($this, $method);
+		                    }
+	                    } catch(\Exception $e) {
+		                    throw new ValidationException($this, $method, $e);
+
+	                    }
                     }
                 } else {
-
-                    if(call_user_func([$verify, $method], $value, $v['args']) === false) {
-                        throw new \InvalidArgumentException("parameter '{$this->name}' have invalid value. Require ".$v['original']);
-                    }
+	                try {
+		                if (call_user_func([$verify, $method], $value, $v['args']) === false) {
+			                throw new ValidationException($this, $method);
+		                }
+	                } catch (\Exception $e) {
+		                throw new ValidationException($this, $method, $e);
+	                }
                 }
             }
         }
         return $value;
     }
 
-    /**
-     * @param mixed $value
-     * @return mixed
-     * @throws InvalidArgumentException
-     */
-    private function _toType($value) {
+	/**
+	 * Type casting
+	 * @param mixed $value
+	 * @param null $creator
+	 * @return mixed
+	 * @throws TypeCastingException
+	 */
+    private function _toType($value, $creator = null) {
         switch($this->type) {
             case "callable":
                 if(!is_callable($value)) {
-                    throw new InvalidArgumentException("argument '{$this->name}' must be callable");
+                    throw new TypeCastingException($this, gettype($value));
                 }
                 break;
             case "file":
@@ -157,7 +218,7 @@ class ParameterInfo {
             case "int":
             case "float":
                 if(!is_numeric($value)) {
-                    throw new InvalidArgumentException("argument '{$this->name}' must be numeric ({$this->type})");
+                    throw new TypeCastingException($this, gettype($value));
                 } else {
                     settype($value, $this->type);
                 }
@@ -165,13 +226,13 @@ class ParameterInfo {
             case "object":
                 if(is_a($value, $this->class)) {
                     break;
-                } else {
-                    // creating object
+                } elseif($creator) {
+	                $value = call_user_func($creator, $this->class, $value);
                 }
-                throw new InvalidArgumentException("argument '{$this->name}' must be instance of ".json_encode($this->class));
+                throw new TypeCastingException($this, gettype($value));
             default:
                 settype($value, $this->type);
         }
         return $value;
     }
-} 
+}

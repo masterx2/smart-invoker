@@ -3,6 +3,9 @@
 namespace SmartInvoker;
 
 
+use SmartInvoker\Error\MethodNotFoundException;
+use SmartInvoker\Error\NotEnoughArgumentException;
+
 class MethodInfo {
 
     public $class;
@@ -10,12 +13,11 @@ class MethodInfo {
     public $name;
     public $desc;
     /**
-     * @var ParameterInfo[]
+     * @var ArgumentInfo[]
      */
-    public $args = [];
-    public $files = false;
+    public $args = array();
     public $return;
-    public $options = [];
+    public $options = array();
 
 	/**
 	 * Scan method
@@ -40,6 +42,7 @@ class MethodInfo {
 	 */
     public static function import(\ReflectionMethod $method) {
         $info = new static;
+	    $info->class  = $method->class;
         $info->method = $method->name;
         $doc = $method->getDocComment();
         $doc_params = array();
@@ -53,7 +56,7 @@ class MethodInfo {
                 }
                 if($doc[1]) {
                     foreach(preg_split('/\r?\n@/mS', $doc[1]) as $param) {
-                        $param = preg_split('/\s+/', $param, 2);
+                        $param = preg_split('/\s+/S', $param, 2);
                         if(!isset($param[1])) {
                             $param[1] = "";
                         }
@@ -94,7 +97,7 @@ class MethodInfo {
 
         }
         foreach($method->getParameters() as $param) {
-            $arg = ParameterInfo::import($param, $doc_params);
+            $arg = ArgumentInfo::import($param, $doc_params);
             if($arg->type == 'file') {
                 $info->files = true;
             }
@@ -103,12 +106,15 @@ class MethodInfo {
         return $info;
     }
 
-    /**
-     * Invoke method
-     * @param array $params
-     * @param object $object
-     * @return mixed
-     */
+	/**
+	 * Invoke method
+	 * @param array $params
+	 * @param object $object
+	 * @return mixed
+	 * @throws Error\TypeCastingException
+	 * @throws Error\ValidationException
+	 * @throws NotEnoughArgumentException
+	 */
     public function invoke(array $params = [], $object = null) {
         $args = [];
 	    $verify = new Verify($object ?: $this->class);
@@ -125,7 +131,7 @@ class MethodInfo {
                 $args[] = $arg->default;
                 continue;
             } else {
-                throw new NotEnoughArgumentException("required parameter '$name'");
+                throw new NotEnoughArgumentException("required parameter '$name'", $arg);
             }
         }
 
@@ -143,4 +149,8 @@ class MethodInfo {
     public function getOptions($option) {
         return isset($this->options[$option]) ? $this->options[$option] : [];
     }
+
+	public function getArgument($name) {
+		return isset($this->args[$name]) ? $this->args[$name] : false;
+	}
 } 

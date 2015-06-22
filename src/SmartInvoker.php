@@ -2,18 +2,25 @@
 
 
 class SmartInvoker {
+
 	/**
 	 * @param callable $cb
 	 * @param array $args
-	 * @param callable $di
+	 * @param callable $creator
 	 * @return mixed
 	 */
-	public static function call(callable $cb, array $args = [], $di = null) {
+	public static function call($cb, array $args = [], $creator = null) {
 		if(is_array($cb)) {
-			return \SmartInvoker\MethodInfo::scan($cb[0], $cb[1])->invoke($args, is_string($cb[0]) ? null : $cb[0], $di);
+			return \SmartInvoker\MethodInfo::scan($cb[0], $cb[1])->invoke($args, is_string($cb[0]) ? null : $cb[0], $creator);
+		} elseif(is_object($cb)) {
+			// todo
 		} else {
-			$cb = explode('::', $cb);
-			return \SmartInvoker\MethodInfo::scan($cb[0], $cb[1])->invoke($args, null, $di);
+			if(strpos($cb, '::')) {
+				$cb = explode('::', $cb);
+				return \SmartInvoker\MethodInfo::scan($cb[0], $cb[1])->invoke($args, null, $creator);
+			} else {
+				// todo
+			}
 		}
 	}
 

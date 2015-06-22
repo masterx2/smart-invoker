@@ -94,7 +94,7 @@ class Verify {
 
     /**
      * @param string $value
-     * @param $type
+     * @param string $type
      * @return bool
      */
     public function email($value, $type) {
