@@ -28,7 +28,7 @@ class MethodInfoTest extends \PHPUnit_Framework_TestCase {
 		$this->assertNull($leg1->default);
 		$this->assertSame('first cathetus of triangle', $leg1->desc);
 		$this->assertSame(0, $leg1->position);
-		$this->assertEquals(['unsigned' => ['original' => 'unsigned', 'args' => true]], $leg1->verify);
+		$this->assertEquals(array('unsigned' => array('original' => 'unsigned', 'args' => true)), $leg1->verify);
 
 		// round
 		$round = $method->args['round'];
