@@ -13,7 +13,6 @@ class Math {
 	 * @return float
 	 */
 	public static function hypotenuse($leg1, $leg2, $round = 2) {
-		var_dump(func_get_args());
 		return round(sqrt($leg1*$leg1 + $leg2*$leg2), $round);
 	}
 }
