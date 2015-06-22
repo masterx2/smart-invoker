@@ -47,7 +47,7 @@ return call_user_func('Math::hypotenuse', $leg1, $leg2);
 But if use `SmartInvoker` we get one line of code: 
 
 ```php
-return SmartInvoker::call('hypotenuse', $_GET);
+return SmartInvoker::call('Math::hypotenuse', $_GET);
 ```
 
 SmartInvoker find all arguments from associative (or plain) array `$_GET`, change type, validate and invoke method.
