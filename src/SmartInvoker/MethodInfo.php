@@ -116,7 +116,7 @@ class MethodInfo {
 	 * @throws NotEnoughArgumentException
 	 */
     public function invoke(array $params = [], $object = null) {
-        $args = [];
+        $args = array();
 	    $verify = new Verify($object ?: $this->class);
         foreach ($this->args as $name => $arg) {
             if(isset($params[ $name ])) {
@@ -135,7 +135,7 @@ class MethodInfo {
             }
         }
 
-        return call_user_func_array([$object ?: $this->class, $this->method], $args);
+        return call_user_func_array(array($object ?: $this->class, $this->method), $args);
     }
 
     public function hasOption($option) {
@@ -147,7 +147,7 @@ class MethodInfo {
     }
 
     public function getOptions($option) {
-        return isset($this->options[$option]) ? $this->options[$option] : [];
+        return isset($this->options[$option]) ? $this->options[$option] : array();
     }
 
 	public function getArgument($name) {
