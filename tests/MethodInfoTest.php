@@ -16,7 +16,7 @@ class MethodInfoTest extends \PHPUnit_Framework_TestCase {
 		$this->assertSame(['https://en.wikipedia.org/wiki/Hypotenuse'], $method->getOptions('link'));
 
 		$this->assertCount(3, $method->args);
-		$this->assertSame(['leg1', 'leg2', 'round'], array_keys($method->args));
+		$this->assertSame(array('leg1', 'leg2', 'round'), array_keys($method->args));
 		$this->assertInstanceOf('SmartInvoker\ArgumentInfo', $method->args['leg1']);
 
 		// leg1
@@ -39,7 +39,7 @@ class MethodInfoTest extends \PHPUnit_Framework_TestCase {
 		$this->assertSame(2, $round->default);
 		$this->assertSame('returns the rounded value of hypotenuse to specified precision', $round->desc);
 		$this->assertSame(2, $round->position);
-		$this->assertEquals(['value' => ['original' => 'value 0..6', 'args' => [0, 6]]], $round->verify);
+		$this->assertEquals(array('value' => array('original' => 'value 0..6', 'args' => array(0, 6))), $round->verify);
 	}
 
 
