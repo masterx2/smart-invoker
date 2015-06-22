@@ -1,0 +1,23 @@
+{
+  "name": "bzick/smart-invoker",
+  "description": "MVC-RPC engine",
+  "license": "MIT",
+  "authors": [
+	{
+	  "name": "Ivan Shalganov",
+	  "email": "a.cobest@gmail.com"
+	}
+  ],
+  "require": {
+	"php": ">=5.4"
+  },
+  "require-dev": {
+	"phpunit/phpunit": "*"
+  },
+  "autoload": {
+	"psr-0": {
+	  "SmartInvoker": "src/"
+	}
+  }
+}
+
