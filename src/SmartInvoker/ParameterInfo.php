@@ -54,12 +54,7 @@ class ParameterInfo {
         if($c = $param->getClass()) {
             $arg->type = "object";
             $arg->class = $c->name;
-            if($c->name === 'Viron\Upload') {
-                $arg->type = "file";
-//                $info["files"] = true;
-            }
         } elseif(isset($doc_params[ $param->name ])) {
-//            var_dump($doc_params); exit;
             $_type = $doc_params[ $param->name ]["type"];
             if(strpos($_type, "|")) { // multitype mark as mixed
                 $arg->type = null;
@@ -80,10 +75,6 @@ class ParameterInfo {
                     $_type = ltrim($_type,'\\');
                     $arg->type = "object";
                     $arg->class = $_type;
-                    if($_type === 'Viron\Upload') {
-                        $arg->type = "file";
-                        $info["files"] = true;
-                    }
                 }
             }
         } else {
@@ -131,7 +122,6 @@ class ParameterInfo {
             }
         }
         if($this->verify && $verify) {
-            var_dump($this->verify);
             foreach($this->verify as $method => $v) {
                 if($this->multiple) {
                     foreach($value as $k => &$item) {
