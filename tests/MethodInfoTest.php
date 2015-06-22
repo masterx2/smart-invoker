@@ -13,7 +13,7 @@ class MethodInfoTest extends \PHPUnit_Framework_TestCase {
 		$this->assertSame('Calculate hypotenuse', $method->desc);
 		$this->assertTrue($method->hasOption('link'));
 		$this->assertSame('https://en.wikipedia.org/wiki/Hypotenuse', $method->getOption('link'));
-		$this->assertSame(['https://en.wikipedia.org/wiki/Hypotenuse'], $method->getOptions('link'));
+		$this->assertSame(array('https://en.wikipedia.org/wiki/Hypotenuse'), $method->getOptions('link'));
 
 		$this->assertCount(3, $method->args);
 		$this->assertSame(array('leg1', 'leg2', 'round'), array_keys($method->args));
