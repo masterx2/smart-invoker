@@ -85,12 +85,12 @@ class ArgumentInfo {
 	 * @param array $doc_params
 	 * @return static
 	 */
-    public static function import(\ReflectionParameter $param, array $doc_params = []) {
+    public static function import(\ReflectionParameter $param, array $doc_params = array()) {
         $arg           = new static;
         $arg->method   = $param->getDeclaringFunction()->name;
         $arg->name     = $param->name;
         $arg->desc     = isset($doc_params[ $param->name ]) ? $doc_params[ $param->name ]["desc"] : "";
-        $arg->verify   = isset($doc_params[ $param->name ]["verify"]) ? $doc_params[ $param->name ]["verify"] : [];
+        $arg->verify   = isset($doc_params[ $param->name ]["verify"]) ? $doc_params[ $param->name ]["verify"] : array();
         $arg->optional = $param->isOptional();
         $arg->default  = $param->isDefaultValueAvailable() ? $param->getDefaultValue() : null;
         $arg->position = $param->getPosition();
@@ -177,7 +177,7 @@ class ArgumentInfo {
                 if($this->multiple) {
                     foreach($value as $k => &$item) {
 	                    try {
-		                    if (call_user_func([$verify, $method], $item, $v['args']) === false) {
+		                    if (call_user_func(array($verify, $method), $item, $v['args']) === false) {
 			                    throw new ValidationException($this, $method);
 		                    }
 	                    } catch(\Exception $e) {
@@ -187,7 +187,7 @@ class ArgumentInfo {
                     }
                 } else {
 	                try {
-		                if (call_user_func([$verify, $method], $value, $v['args']) === false) {
+		                if (call_user_func(array($verify, $method), $value, $v['args']) === false) {
 			                throw new ValidationException($this, $method);
 		                }
 	                } catch (\Exception $e) {

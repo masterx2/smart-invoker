@@ -86,7 +86,7 @@ class MethodInfo {
                                 if(isset($info->options[ $param[0] ])) {
                                     $info->options[ $param[0] ][] = $param[1];
                                 } else {
-                                    $info->options[ $param[0] ] = [ $param[1] ];
+                                    $info->options[ $param[0] ] = array( $param[1] );
                                 }
                         }
                     }
@@ -115,7 +115,7 @@ class MethodInfo {
 	 * @throws Error\ValidationException
 	 * @throws NotEnoughArgumentException
 	 */
-    public function invoke(array $params = [], $object = null) {
+    public function invoke(array $params = array(), $object = null) {
         $args = array();
 	    $verify = new Verify($object ?: $this->class);
         foreach ($this->args as $name => $arg) {
