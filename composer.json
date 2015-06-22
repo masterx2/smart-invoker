@@ -1,6 +1,7 @@
 {
   "name": "bzick/smart-invoker",
-  "description": "MVC-RPC engine",
+  "description": "Utility classes for invoking callables with verification of arguments and type casting",
+  "keywords": ["invoke", "call", "validation", "cast", "call_user_func", "call_user_func_array"],
   "license": "MIT",
   "authors": [
 	{
