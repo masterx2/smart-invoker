@@ -16,7 +16,7 @@ class Verify {
 
     public function __call($name, $params) {
         if(method_exists($this->context, $name.'Validator')) {
-            return call_user_func_array([$this->context, $name.'Validator'], $params);
+            return call_user_func_array(array($this->context, $name.'Validator'), $params);
         }
         return true;
     }
