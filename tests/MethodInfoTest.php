@@ -61,7 +61,7 @@ class MethodInfoTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testInvoke($leg1, $leg2, $round, $result) {
 		$method = MethodInfo::scan('SmartInvokerTest\Math', 'hypotenuse');
-		$this->assertEquals($result, $method->invoke([$leg1, $leg2, $round]));
-		$this->assertEquals($result, $method->invoke(["leg2" => $leg2, "leg1" => $leg1, "round" => $round]));
+		$this->assertEquals($result, $method->invoke(array($leg1, $leg2, $round)));
+		$this->assertEquals($result, $method->invoke(array("leg2" => $leg2, "leg1" => $leg1, "round" => $round)));
 	}
 }
