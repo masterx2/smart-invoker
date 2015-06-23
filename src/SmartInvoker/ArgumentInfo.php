@@ -143,7 +143,7 @@ class ArgumentInfo {
 	 */
     public function filter($value, $verify = null) {
         $type = gettype($value);
-
+	    $arg = $this;
         if($this->multiple && !is_array($value)) {
             throw new TypeCastingException($this, gettype($value));
         }
@@ -151,24 +151,24 @@ class ArgumentInfo {
             if($this->type === $type) { // type may be an array
                 if($type == "object") {
                     if($this->multiple) {
-                        array_walk($value, function (&$value) {
-                            if(!is_a($value, $this->class)) {
-	                            throw new TypeCastingException($this, gettype($value));
+                        array_walk($value, function (&$value) use ($arg) {
+                            if(!is_a($value, $arg->class)) {
+	                            throw new TypeCastingException($arg, gettype($value));
                             }
                         });
                     } else {
-                        if(!is_a($value, $this->class)) {
-	                        throw new TypeCastingException($this, gettype($value));
+                        if(!is_a($value, $arg->class)) {
+	                        throw new TypeCastingException($arg, gettype($value));
                         }
                     }
                 }
             } else {  // if invalid type - tying fix it
                 if($this->multiple) {
-                    array_walk($value, function (&$value) {
-                        $value = $this->_toType($value);
+                    array_walk($value, function (&$value) use ($arg) {
+                        $value = $arg->toType($value);
                     });
                 } else {
-                    $value = $this->_toType($value);
+                    $value = $this->toType($value);
                 }
             }
         }
@@ -206,7 +206,7 @@ class ArgumentInfo {
 	 * @return mixed
 	 * @throws TypeCastingException
 	 */
-    private function _toType($value, $creator = null) {
+    public function toType($value, $creator = null) {
         switch($this->type) {
             case "callable":
                 if(!is_callable($value)) {
