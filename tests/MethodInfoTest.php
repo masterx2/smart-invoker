@@ -64,4 +64,21 @@ class MethodInfoTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals($result, $method->invoke(array($leg1, $leg2, $round)));
 		$this->assertEquals($result, $method->invoke(array("leg2" => $leg2, "leg1" => $leg1, "round" => $round)));
 	}
+
+	public function providerInvokeMulti() {
+		return array(
+			array(array(2, 4, 6), 4),
+		);
+	}
+
+	/**
+	 * @dataProvider providerInvokeMulti
+	 * @param $nums
+	 * @param $result
+	 * @throws Error\NotEnoughArgumentException
+	 */
+	public function testInvokeMulti($nums, $result) {
+		$method = MethodInfo::scan('SmartInvokerTest\Math', 'avg');
+		$this->assertEquals($result, $method->invoke(array("nums" => $nums)));
+	}
 }

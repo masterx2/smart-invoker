@@ -56,7 +56,7 @@ class Verify {
 	 * @return bool
 	 */
 	public function smalltext($string) {
-		return strlen($string) < 0x100; // 255B
+		return strlen($string) < 0x100; // max 255B
 	}
 
 	/**
@@ -65,7 +65,7 @@ class Verify {
 	 * @return bool
 	 */
 	public function text($text) {
-		return strlen($text) < 0x10000; // 64MiB
+		return strlen($text) < 0x10000; // mx 64MiB
 	}
 
 	/**
@@ -98,9 +98,9 @@ class Verify {
      * @return bool
      */
     public function email($value, $type) {
-        if($type == "extended" && strpos($value, "<") !== false) {
-            if(preg_match('/^(?:[^\n\r<])?<(.*?)>$/', $value, $matche)) {
-                return filter_var($matche[1], FILTER_VALIDATE_EMAIL) !== false;
+        if($type === "extended" && strpos($value, "<") !== false) {
+            if(preg_match('/^(?:.*?)?<(.*?)>$/', $value, $matches)) {
+                return filter_var($matches[1], FILTER_VALIDATE_EMAIL) !== false;
             }
         } else {
             return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
@@ -121,7 +121,7 @@ class Verify {
      * @return bool
      */
     public function url($value) {
-        return filter_var($value, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED, FILTER_FLAG_QUERY_REQUIRED) !== false;
+        return filter_var($value, FILTER_VALIDATE_URL) !== false;
     }
 
     /**
@@ -145,7 +145,7 @@ class Verify {
      * @param array|string $len
      * @return bool
      */
-    public function between($value, $len) {
+    public function value($value, $len) {
         if(is_array($len)) {
             return $value >= $len[0] && $value <= $len[1];
         } else {
@@ -168,11 +168,10 @@ class Verify {
 
     /**
      * @param string $value
-     * @param callable $callback
      * @return mixed
      */
-    public function callback($value, $callback) {
-        return call_user_func($callback, $value);
+    public function callback($value) {
+        return is_callable($value);
     }
 
     /**
@@ -225,11 +224,13 @@ class Verify {
         return !!preg_match('~^['.$pattern.']*$~', $value);
     }
 
-    /**
-     *
-     */
+	/**
+	 * @param $value
+	 * @param $pattern
+	 * @return bool
+	 */
     public function regexp($value, $pattern) {
-        return !!preg_match($pattern, $value);
+        return (bool)preg_match($pattern, $value);
     }
 
 	/**
@@ -238,8 +239,7 @@ class Verify {
 	 * @return bool
 	 */
 	public function like($value, $pattern) {
-        $matched = sscanf($value." 0x\x7", $pattern." 0x%[\x7]");
-        return $matched && !is_null(end($matched));
+		return fnmatch($pattern, $value);
     }
 
 	/**
@@ -259,7 +259,7 @@ class Verify {
 
 	/**
 	 * @param mixed $value
-	 * @param $callback
+	 * @param callable $callback
 	 * @return bool
 	 */
     public function option($value, $callback) {

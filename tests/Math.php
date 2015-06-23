@@ -15,4 +15,14 @@ class Math {
 	public static function hypotenuse($leg1, $leg2, $round = 2) {
 		return round(sqrt($leg1*$leg1 + $leg2*$leg2), $round);
 	}
+
+
+	/**
+	 * Calculate average
+	 * @param float[] $nums numbers
+	 * @return float
+	 */
+	public static function avg(array $nums) {
+		return array_sum($nums) / count($nums);
+	}
 }

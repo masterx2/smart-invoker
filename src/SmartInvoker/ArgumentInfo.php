@@ -151,7 +151,7 @@ class ArgumentInfo {
             if($this->type === $type) { // type may be an array
                 if($type == "object") {
                     if($this->multiple) {
-                        array_walk_recursive($param, function (&$value) {
+                        array_walk($value, function (&$value) {
                             if(!is_a($value, $this->class)) {
 	                            throw new TypeCastingException($this, gettype($value));
                             }
@@ -164,7 +164,7 @@ class ArgumentInfo {
                 }
             } else {  // if invalid type - tying fix it
                 if($this->multiple) {
-                    array_walk_recursive($param, function (&$value) {
+                    array_walk($value, function (&$value) {
                         $value = $this->_toType($value);
                     });
                 } else {
