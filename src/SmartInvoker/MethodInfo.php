@@ -30,7 +30,7 @@ class MethodInfo {
         try {
             $me = new \ReflectionMethod($class, $method);
         } catch(\Exception $e) {
-            throw new MethodNotFoundException("Reflection($class::$method) failed", 0, $e);
+            throw new MethodNotFoundException("Method $method not found", 0, $e);
         }
         return MethodInfo::import($me);
     }
