@@ -7,23 +7,33 @@ use SmartInvoker\Error\TypeCastingException;
 use SmartInvoker\Error\ValidationException;
 
 class ArgumentInfo {
+	const SCALAR  = 1;
+	const COMPLEX = 2;
 
-    private static $_aliases = array(
-        "integer" => "int",
-        "str" => "string",
-        "double" => "float"
-    );
+	/**
+	 * @var array of native types
+	 */
+	public static $types = array(
+		"int"      => self::SCALAR,
+		"bool"     => self::SCALAR,
+		"float"    => self::SCALAR,
+		"string"   => self::SCALAR,
+		"array"    => self::COMPLEX,
+		"NULL"     => self::COMPLEX,
+		"resource" => self::COMPLEX,
+		"callable" => self::COMPLEX,
+	);
 
     /**
      * @var array of native types with priorities
      */
     private static $_native = array(
-        "int" => 9,
-        "bool" => 7,
-        "float" => 8,
-        "string" => 10,
-        "array" => 6,
-        "NULL" => 1,
+        "int"      => 9,
+        "bool"     => 7,
+        "float"    => 8,
+        "string"   => 10,
+        "array"    => 6,
+        "NULL"     => 1,
         "resource" => 5,
         "callable" => 10
     );
@@ -145,7 +155,7 @@ class ArgumentInfo {
         $type = gettype($value);
 	    $arg = $this;
         if($this->multiple && !is_array($value)) {
-            throw new TypeCastingException($this, gettype($value));
+            throw new TypeCastingException($this, $type);
         }
         if($this->type) {
             if($this->type === $type) { // type may be an array
@@ -158,7 +168,7 @@ class ArgumentInfo {
                         });
                     } else {
                         if(!is_a($value, $arg->class)) {
-	                        throw new TypeCastingException($arg, gettype($value));
+	                        throw new TypeCastingException($arg, $type);
                         }
                     }
                 }
@@ -207,29 +217,34 @@ class ArgumentInfo {
 	 * @throws TypeCastingException
 	 */
     public function toType($value, $creator = null) {
+	    $type = gettype($value);
         switch($this->type) {
-            case "callable":
-                if(!is_callable($value)) {
-                    throw new TypeCastingException($this, gettype($value));
-                }
-                break;
-            case "file":
-                break;
+	        case "callable":
+		        if (!is_callable($value)) {
+			        throw new TypeCastingException($this, $type);
+		        }
+		        return $value;
+	        case "object":
+		        if (is_a($value, $this->class)) {
+			        break;
+		        } elseif ($creator) {
+			        return call_user_func($creator, $this->class, $value);
+		        }
+		        throw new TypeCastingException($this, $type);
+        }
+	    if($type == "array" || $type == "object") {
+		    throw new TypeCastingException($this, $type);
+	    }
+	    switch($this->type) {
             case "int":
             case "float":
                 if(!is_numeric($value)) {
-                    throw new TypeCastingException($this, gettype($value));
+                    throw new TypeCastingException($this, $type);
                 } else {
                     settype($value, $this->type);
                 }
                 break;
-            case "object":
-                if(is_a($value, $this->class)) {
-                    break;
-                } elseif($creator) {
-	                $value = call_user_func($creator, $this->class, $value);
-                }
-                throw new TypeCastingException($this, gettype($value));
+
             default:
                 settype($value, $this->type);
         }

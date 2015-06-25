@@ -97,11 +97,7 @@ class MethodInfo {
 
         }
         foreach($method->getParameters() as $param) {
-            $arg = ArgumentInfo::import($param, $doc_params);
-            if($arg->type == 'file') {
-                $info->files = true;
-            }
-            $info->args[$arg->name] = $arg;
+            $info->args[$param->name] = ArgumentInfo::import($param, $doc_params);
         }
         return $info;
     }
