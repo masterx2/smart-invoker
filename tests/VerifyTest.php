@@ -32,7 +32,7 @@ class VerifyTest extends \PHPUnit_Framework_TestCase {
 			array("date", true,  "2015-06-21"),
 			array("date", true,  "20150621"),
 			array("date", false, "15|06|21"),
-			array("date", true,  "15|06|21", "%y|%m|%d"),
+			array("date", true,  "15/06/21", "y/m/d"),
 
 			array("is", true,  1),
 

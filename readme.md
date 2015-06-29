@@ -86,25 +86,25 @@ public function doSomethingAction($arg1, $arg2, array $arg3) {
 
 List of verifications (class `SmartInvoker\Verify`):
 
-* `unsigned` - число должно быть положительным, включая ноль
-* `positive` - число должно быть строго больше нуля
-* `negative` - число должно быть строго меньше нуля
-* `smalltext` - текстовое значение не более 256 симовлов длиной
-* `text` - текстовое значение не более 64KiB симовлов длиной
-* `largetext` - текстовое значение не более 2MiB симовлов длиной
-* `date [FORMAT]` - значение должно быть датой. `FORMAT` - шаблон ожидаемой даты, шаблон должен быть в формате [strftime](http://php.net/manual/en/function.strftime.php). Если шаблон не указан для проверки даты используется [strtotime](http://www.php.net/manual/en/function.strtotime.php). Например, `date`, `date %Y-%m-%d`
-* `length RANGE` - строковое значение имеет ограничения по количеству символов. Интервал задается промежуток значений `1..6` так и не равеством `<=100`. Например, `length <100`, `length 6..20`
+* `unsigned` - value is unsigned __integer__
+* `positive` - __integer__ value __greater than zero__
+* `negative` -  __integer__ value __less than zero__
+* `smalltext` - __string__ value less than or equal to __256 bytes__
+* `text` - __string__ value less than or equal to __64KiB__.
+* `largetext` - __string__ value less than or equal to __2MiB__.
+* `date [FORMAT]` - string value is a __date__. `FORMAT` - the [format](http://php.net/manual/datetime.createfromformat.php#refsect1-datetime.createfromformat-parameters) that the passed in string should be in. `FORMAT` - optional parameter, by default function [strtotime](http://docs.php.net/strtotime) parse string.
+* `length RANGE` - specifies the __maximum number of bytes__ allowed in the __string__ value. Maybe range `length 1..6`, equality `length = 6` or inequality `length <=100`.
 * `value RANGE` - числовое значение имеет ограничения по значению. Интервал задается промежуток значений `1..6` так и не равеством `<=100`. Например, `value <100`, `value 6..20`
 * `count RANGE` - массив занчений имеет ограничения по количеству элеменотов. Интервал задается промежуток значений `1..6` так и не равеством `<=100`. Например, `count <100`, `count 6..20`
-* `file` - строковое значение является регулярным файлом
-* `dir` - строковое значение является директорией
-* `email [extended]` - строковое значение является электронным адресом. Если включен параметр `extended` формат email может быть в виде `Vasya Pupkin <pupkin@dev.null> `
-* `domain` - строковое значение является доменом
+* `file` - checks that the given __string__ is __existing regular file__.
+* `dir` - checks that the given __string__ is __existing directory__.
+* `email [extended]` - __string__ value is __email address__. Set parameter `extended` that would allow the email format `James Bond <agent007@dev.null>`.
+* `domain` - checks that the given __string__ is __domain__.
 * `custom CALLBACK` - значение будет передано в указанную функцию для проверки
-* `url` - строковое значение является интернет-адресом
-* `ip` - строковое значение является IP адресом
-* `hex` - строковое значение является HEX выражением, like md5 or sha1.
-* `like PATTERN` - строковое значение удовлетворяет шаблону формата glob. Например, `like *.tgz`
+* `url` -  __string__ value is __URL__
+* `ip` - __string__ value is __IP address__
+* `hex` - __hex string__, like md5 or sha1.
+* `like PATTERN` - match __string__ value against a __[glob](https://en.wikipedia.org/wiki/Glob_%28programming%29) pattern__. Example: `like *.tgz`
 * `mask PATTERN` - строковое значение удовлетворяет маске символов. Например, `mask a-z0-9_`
 * `regexp PATTERN` - строковое значение удовлетворяет регулярному выражению. Например, `regexp /^[a-z0-9_]+$/si`
 * `variants SOURCE` - значение является одним из вариантом из списка SOURCE. SOURCE может быть как обычным перечислением через пробел возможных значений параметра так и коллбеком, который возвращает массив допустимых параметров. Например, `variants: one two three four`

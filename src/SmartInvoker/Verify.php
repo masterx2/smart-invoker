@@ -31,12 +31,12 @@ class Verify {
 
     /**
      * @param mixed $date
-     * @param $format
+     * @param string $format
      * @return bool
      */
     public function date($date, $format) {
         if(is_string($format)) {
-            return strptime($date, $format) !== false;
+            return \DateTime::createFromFormat($format, $date) !== false;
         } else {
             return strtotime($date) !== false;
         }
