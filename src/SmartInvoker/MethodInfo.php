@@ -30,10 +30,18 @@ class MethodInfo {
         try {
             $me = new \ReflectionMethod($class, $method);
         } catch(\Exception $e) {
-            throw new MethodNotFoundException("Method $method not found", 0, $e);
+
+            if (is_object($class)) {
+                $className = get_class($class);
+            } else {
+                $className = $class;
+            }
+
+            throw new MethodNotFoundException("Reflection($className::$method) failed", 0, $e, $method);
         }
         return MethodInfo::import($me);
     }
+
 
 	/**
 	 * Import method from reflection
